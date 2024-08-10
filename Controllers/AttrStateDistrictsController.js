@@ -36,8 +36,8 @@ exports.getStateDistrict = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else if (req?.body?.search_text) {
-            data = await getStateDistrictByText(req?.body?.search_text);
-            if (data.length >= 1) {
+            data = await getStateDistrictByText2(req?.body?.search_text);
+            if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("search_text dose not match"))
@@ -45,7 +45,7 @@ exports.getStateDistrict = async (req, res) => {
         }
         else {
             data = await getStateDistrict();
-            if (data.length >= 1) {
+            if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("data is not availble "))

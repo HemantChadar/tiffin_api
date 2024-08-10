@@ -45,41 +45,41 @@ exports.getStateDistrictByText = async (text) => {
     return await promise_connection(query, data);
 };
 
-// exports.getStateDistrictByText2 = async (text) => {
-//     let query1 = '(name LIKE ?'
-//     let query2 = 'OR (name_state LIKE ?'
-//     let query3 = 'OR (name_country LIKE ?'
-//     let mailQuery = 'SELECT * FROM attr_state_districts WHERE '
-//     let and = []
-//     let textArray = text.split(" ")
-//     let sendData = []
-//     let sendData1 = []
-//     let sendData2 = []
-//     let sendData3 = []
+exports.getStateDistrictByText2 = async (text) => {
+    let query1 = '(name LIKE ?'
+    let query2 = 'OR (name_state LIKE ?'
+    let query3 = 'OR (name_country LIKE ?'
+    let mailQuery = 'SELECT * FROM attr_state_districts WHERE '
+    let and = []
+    let textArray = text.split(" ")
+    let sendData = []
+    let sendData1 = []
+    let sendData2 = []
+    let sendData3 = []
 
-//     textArray.forEach(element => {
-//         sendData1.push('%' + element + '%');
-//         sendData2.push('%' + element + '%');
-//         sendData3.push('%' + element + '%');
-//         and.push("AND")
-//     })
+    textArray.forEach(element => {
+        sendData1.push('%' + element + '%');
+        sendData2.push('%' + element + '%');
+        sendData3.push('%' + element + '%');
+        and.push("AND");
+    })
+    
 
-//     and.pop()
-//     sendData1.forEach(element => { sendData.push(element) })
-//     sendData2.forEach(element => { sendData.push(element) })
-//     sendData3.forEach(element => { sendData.push(element) })
+    and.pop()
+    sendData1.forEach(element => { sendData.push(element) });
+    sendData2.forEach(element => { sendData.push(element) });
+    sendData3.forEach(element => { sendData.push(element) });
 
-//     and.forEach(element => {
-//         query1 = query1 + ' ' + element + ' name ' + 'LIKE ?';
-//         query2 = query2 + ' ' + element + ' name_state ' + 'LIKE ?';
-//         query3 = query3 + ' ' + element + ' name_country ' + 'LIKE ?';
-//     })
+    and.forEach(element => {
+        query1 = query1 + ' ' + element + ' name ' + 'LIKE ?';
+        query2 = query2 + ' ' + element + ' name_state ' + 'LIKE ?';
+        query3 = query3 + ' ' + element + ' name_country ' + 'LIKE ?';
+    })
 
-//     mailQuery = mailQuery + query1 + ') ' + query2 + ') ' + query3 + ')'
-//     console.log("length---", and)
-//     console.log("sendData---", sendData)
-//     console.log("mailQuery--", mailQuery)
+    mailQuery = mailQuery + query1 + ') ' + query2 + ') ' + query3 + ')';
+    console.log("length---", and)
+    console.log("sendData---", sendData)
 
 
-//     return await promise_connection(mailQuery, sendData);
-// };
+    return await promise_connection(mailQuery, sendData);
+};
