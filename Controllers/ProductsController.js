@@ -36,7 +36,7 @@ exports.getProduct = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getProduct();
+            data = await getProduct(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

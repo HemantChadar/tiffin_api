@@ -5,9 +5,11 @@ const currentDate = new Date();
     const timestamp = currentDate.getTime();
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getSubscriptionDeliverySchedule = async () => {
-    const query = "SELECT * FROM user_subscription_delivery_schedules";
-    return await promise_connection(query);
+exports.getSubscriptionDeliverySchedule = async (body) => {  
+    const query = "SELECT * FROM user_subscription_delivery_schedules ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getSubscriptionDeliveryScheduleById = async (id) => {
@@ -68,7 +70,11 @@ exports.updateSubscriptionDeliverySchedule = async (data,keyName,keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug("user_subscription_delivery_schedules " + timestamp))
                 query = query + element.Field + '=?,';
-            } else {
+            } else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+            else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }

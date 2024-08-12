@@ -38,7 +38,7 @@ exports.getFaq = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getFaq();
+            data = await getFaq(req.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

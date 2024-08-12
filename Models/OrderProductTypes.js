@@ -4,19 +4,34 @@ const { CreateSlug, CreateToken } = require('../Conection/HelpingTool');
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getOrderProductType = async () => {
-    const query = "SELECT * FROM order_product_types";
-    return await promise_connection(query);
+exports.getOrderProductType = async (body) => { 
+    const query = "SELECT * FROM order_product_types ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getOrderProductTypeById = async (id) => {
     const query = "SELECT * FROM order_product_types WHERE id=?";
-    return await promise_connection(query, [id]);
+    const orderQuery = "SELECT * FROM orders WHERE token=?";
+    let = mainData = {}
+    let productType = await promise_connection(query, [id]);
+    let orderData = await promise_connection(orderQuery, [productType[0].token_order]);
+    mainData = { ...productType[0], order: orderData }
+    return mainData;
 };
 
 exports.getOrderProductTypeByToken = async (token) => {
     const query = "SELECT * FROM order_product_types WHERE token=?";
-    return await promise_connection(query, [token]);
+
+    const orderQuery = "SELECT * FROM orders WHERE token=?";
+    let = mainData = {}
+    let productType = await promise_connection(query, [token]);
+    let orderData = await promise_connection(orderQuery, [productType[0].token_order]);
+    mainData = { ...productType[0], order: orderData }
+    return mainData;
+
+ 
 };
 
 
@@ -40,12 +55,12 @@ exports.addOrderProductType = async (data) => {
     });
     dataSet.push(token)
     query = query + "`" + "token" + "`" + ',';
-    if (data?.title) { 
+    if (data?.title) {
         dataSet.push(CreateSlug(data?.title))
         query = query + "`" + "slug" + "`" + ',';
     }
     mailQuery = query.substring(0, query.length - 1) + ') VALUE (?)';
- 
+
     return await promise_connection(mailQuery, [dataSet]);
 };
 
@@ -68,7 +83,11 @@ exports.updateOrderProductType = async (data, keyName, keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug(data.title))
                 query = query + element.Field + '=?,';
-            } else {
+            } else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+             else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }

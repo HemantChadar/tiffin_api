@@ -4,9 +4,11 @@ const { CreateSlug, CreateToken } = require('../Conection/HelpingTool');
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getProduct = async () => {
-    const query = "SELECT * FROM products";
-    return await promise_connection(query);
+exports.getProduct = async (body) => { 
+    const query = "SELECT * FROM products ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getProductById = async (id) => {
@@ -67,7 +69,11 @@ exports.updateProduct = async (data, keyName, keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug(data?.title))
                 query = query + element.Field + '=?,';
-            } else {
+            } else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+             else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }

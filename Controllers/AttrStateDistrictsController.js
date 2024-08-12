@@ -44,7 +44,7 @@ exports.getStateDistrict = async (req, res) => {
             }
         }
         else {
-            data = await getStateDistrict();
+            data = await getStateDistrict(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

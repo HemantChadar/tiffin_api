@@ -37,7 +37,7 @@ exports.getOrderPayments = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getOrderPayments();
+            data = await getOrderPayments(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

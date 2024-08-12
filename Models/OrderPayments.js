@@ -5,9 +5,11 @@ const currentDate = new Date();
 const timestamp = currentDate.getTime();
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getOrderPayments = async () => {
-    const query = "SELECT * FROM order_payments";
-    return await promise_connection(query);
+exports.getOrderPayments = async (body) => { 
+    const query = "SELECT * FROM order_payments ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getOrderPaymentsById = async (id) => {
@@ -67,7 +69,11 @@ exports.updateOrderPayments = async (data, keyName, keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug("order_payments " + timestamp))
                 query = query + element.Field + '=?,';
-            } else {
+            }  else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+            else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }

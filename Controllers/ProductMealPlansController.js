@@ -37,7 +37,7 @@ exports.getProductMealPlan = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getProductMealPlan();
+            data = await getProductMealPlan(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

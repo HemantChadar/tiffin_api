@@ -5,9 +5,11 @@ const currentDate = new Date();
 const timestamp = currentDate.getTime();
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getProductTypeTimeout = async () => {
-    const query = "SELECT * FROM product_type_timeouts";
-    return await promise_connection(query);
+exports.getProductTypeTimeout = async (body) => { 
+    const query = "SELECT * FROM product_type_timeouts ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getProductTypeTimeoutById = async (id) => {
@@ -68,7 +70,11 @@ exports.updateProductTypeTimeout = async (data, keyName, keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug("product_type_timeouts "+timestamp))
                 query = query + element.Field + '=?,';
-            } else {
+            } else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+             else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }

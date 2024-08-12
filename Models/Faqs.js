@@ -4,9 +4,12 @@ const { CreateSlug, CreateToken } = require('../Conection/HelpingTool');
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getFaq = async () => {
-    const query = "SELECT * FROM faqs";
-    return await promise_connection(query);
+exports.getFaq = async (body) => {
+    const query = "SELECT * FROM faqs ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
+
 };
 
 exports.getFaqById = async (id) => {
@@ -68,7 +71,12 @@ exports.updateFaq = async (data, keyName, keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug(data.title))
                 query = query + element.Field + '=?,';
-            } else {
+            }
+            else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+            else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }
@@ -76,8 +84,6 @@ exports.updateFaq = async (data, keyName, keyValue) => {
     });
     // dataSet.push(data.id)
     mailQuery = query.substring(0, query.length - 1) + ` WHERE ${keyName}=${keyValue}`;
-    console.log("dataSet--", dataSet)
-    console.log("mailQuery--", mailQuery)
 
     return await promise_connection(mailQuery, dataSet);
 };

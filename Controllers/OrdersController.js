@@ -22,21 +22,21 @@ exports.getOrder = async (req, res) => {
     try {
         if (req?.body?.id) {
             data = await getOrderById(req.body.id);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("id is invailid "))
             }
         }
         else if (req?.body?.token) {
             data = await getOrderByToken(req.body.token);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getOrder();
+            data = await getOrder(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

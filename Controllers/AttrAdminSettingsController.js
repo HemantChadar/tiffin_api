@@ -37,7 +37,7 @@ exports.getAdminSettings = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getAdminSettings();
+            data = await getAdminSettings(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data settings successfully get", data))
             } else {

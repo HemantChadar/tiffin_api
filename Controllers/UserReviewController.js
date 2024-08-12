@@ -1,6 +1,6 @@
 const { getUserReviewById, getUserReviewByToken, getUserReview, addUserReview, updateUserReview } = require("../Models/UserReview")
 
- 
+
 
 const errorResponse = (message) => {
     return ({
@@ -23,27 +23,27 @@ exports.getUserReview = async (req, res) => {
     try {
         if (req?.body?.id) {
             data = await getUserReviewById(req.body.id);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("id is invailid "))
             }
         }
         else if (req?.body?.token) {
             data = await getUserReviewByToken(req.body.token);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getUserReview();
+            data = await getUserReview(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("data is not availble "))
             }
-        } 
+        }
 
     } catch (error) {
         res.json(errorResponse(error))
@@ -84,7 +84,7 @@ exports.updateUserReview = async (req, res) => {
         }
         if (req?.body?.token) {
             user = await getUserReviewByToken(req.body.token);
-        }  
+        }
         res.json(successResponse("data successfully updated", user[0]))
     } catch (error) {
         res.json(errorResponse(error))

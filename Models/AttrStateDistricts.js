@@ -3,9 +3,11 @@ const { promisify } = require("util");
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getStateDistrict = async () => {
-    const query = "SELECT * FROM attr_state_districts";
-    return await promise_connection(query);
+exports.getStateDistrict = async (body) => { 
+    const query = "SELECT * FROM attr_state_districts ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getStateDistrictById = async (id) => {
@@ -64,8 +66,9 @@ exports.getStateDistrictByText2 = async (text) => {
         and.push("AND");
     })
     
+    console.log("length---", and)
+    and.pop() 
 
-    and.pop()
     sendData1.forEach(element => { sendData.push(element) });
     sendData2.forEach(element => { sendData.push(element) });
     sendData3.forEach(element => { sendData.push(element) });
@@ -77,8 +80,8 @@ exports.getStateDistrictByText2 = async (text) => {
     })
 
     mailQuery = mailQuery + query1 + ') ' + query2 + ') ' + query3 + ')';
-    console.log("length---", and)
     console.log("sendData---", sendData)
+    console.log("")
 
 
     return await promise_connection(mailQuery, sendData);

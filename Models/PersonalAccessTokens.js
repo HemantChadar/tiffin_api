@@ -4,9 +4,11 @@ const { CreateSlug, CreateToken } = require('../Conection/HelpingTool');
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getPersonalAccessToken = async () => {
-    const query = "SELECT * FROM personal_access_tokens";
-    return await promise_connection(query);
+exports.getPersonalAccessToken = async (body) => { 
+    const query = "SELECT * FROM personal_access_tokens ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getPersonalAccessTokenById = async (id) => {

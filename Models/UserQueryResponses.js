@@ -4,19 +4,42 @@ const { CreateSlug, CreateToken } = require('../Conection/HelpingTool');
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getUserQueryResponse = async () => {
-    const query = "SELECT * FROM user_query_responses";
-    return await promise_connection(query);
+exports.getUserQueryResponse = async (body) => { 
+    const query = "SELECT * FROM user_query_responses ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getUserQueryResponseById = async (id) => {
     const query = "SELECT * FROM user_query_responses WHERE id=?";
-    return await promise_connection(query, [id]);
+ 
+    const attachmentsQuery = "SELECT * FROM user_query_response_attachments WHERE token_query_response=?";
+    let = mainData = {}
+    let queryResponse = await promise_connection(query, [id]);
+    let queryAttachments = await promise_connection(attachmentsQuery, [queryResponse[0].token]);
+
+
+    mainData = { ...queryResponse[0], attachments: queryAttachments }
+    return mainData;
+
+    // return await promise_connection(query, [id]);
 };
 
 exports.getUserQueryResponseByToken = async (token) => {
     const query = "SELECT * FROM user_query_responses WHERE token=?";
-    return await promise_connection(query, [token]);
+    const attachmentsQuery = "SELECT * FROM user_query_response_attachments WHERE token_query_response=?";
+
+    let = mainData = {}
+    let queryResponse = await promise_connection(query, [token]);
+    let queryAttachments = await promise_connection(attachmentsQuery, [queryResponse[0].token]);
+
+
+    mainData = { ...queryResponse[0], attachments: queryAttachments }
+    return mainData;
+
+
+    //  return
 };
 
 
@@ -40,7 +63,7 @@ exports.addUserQueryResponse = async (data) => {
     });
     dataSet.push(token)
     query = query + "`" + "token" + "`" + ',';
-    if (data?.title) { 
+    if (data?.title) {
         dataSet.push(CreateSlug(data?.title))
         query = query + "`" + "slug" + "`" + ',';
     }
@@ -49,7 +72,7 @@ exports.addUserQueryResponse = async (data) => {
     return await promise_connection(mailQuery, [dataSet]);
 };
 
-exports.updateUserQueryResponse = async (data,keyName,keyValue) => {
+exports.updateUserQueryResponse = async (data, keyName, keyValue) => {
 
     const previousDataQuery = `SELECT * FROM user_query_responses WHERE ${keyName}=?`;
     const fieldsQuery = "DESCRIBE user_query_responses";
@@ -67,7 +90,11 @@ exports.updateUserQueryResponse = async (data,keyName,keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug(data?.title))
                 query = query + element.Field + '=?,';
-            } else {
+            } else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+             else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }

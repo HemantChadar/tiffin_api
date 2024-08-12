@@ -37,7 +37,7 @@ exports.getUserBusinessSetting = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getUserBusinessSetting();
+            data = await getUserBusinessSetting(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

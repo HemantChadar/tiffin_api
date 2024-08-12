@@ -7,19 +7,36 @@ const timestamp = currentDate.getTime();
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getOrder = async () => {
-    const query = "SELECT * FROM orders";
-    return await promise_connection(query);
+exports.getOrder = async (body) => { 
+    const query = "SELECT * FROM orders ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getOrderById = async (id) => {
     const query = "SELECT * FROM orders WHERE id=?";
-    return await promise_connection(query, [id]);
+    let = mainData = {}
+    const planQuery = "SELECT * FROM product_meal_plans WHERE token=?";
+    const productTypeQuery = "SELECT * FROM order_product_types WHERE token_order=?";
+    let orderData = await promise_connection(query, [id]);
+    let planData = await promise_connection(planQuery, [orderData[0].token_meal_plan]);
+    let productTypeData = await promise_connection(productTypeQuery, [orderData[0].token]);
+    mainData = { ...orderData[0], meal_plan: planData, product_types: productTypeData }
+    return mainData;
 };
 
 exports.getOrderByToken = async (token) => {
     const query = "SELECT * FROM orders WHERE token=?";
-    return await promise_connection(query, [token]);
+    let = mainData = {}
+    const planQuery = "SELECT * FROM product_meal_plans WHERE token=?";
+    const productTypeQuery = "SELECT * FROM order_product_types WHERE token_order=?";
+    let orderData = await promise_connection(query, [token]);
+    let planData = await promise_connection(planQuery, [orderData[0].token_meal_plan]);
+    let productTypeData = await promise_connection(productTypeQuery, [orderData[0].token]);
+    mainData = { ...orderData[0], meal_plan: planData, product_types: productTypeData }
+    return mainData;
+ 
 };
 
 
@@ -46,7 +63,7 @@ exports.addOrder = async (data) => {
     dataSet.push(CreateSlug("orders " + timestamp))
     query = query + "`" + "slug" + "`" + ',';
     mailQuery = query.substring(0, query.length - 1) + ') VALUE (?)';
- 
+
     return await promise_connection(mailQuery, [dataSet]);
 };
 
@@ -67,7 +84,11 @@ exports.updateOrder = async (data, keyName, keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug("orders " + timestamp))
                 query = query + element.Field + '=?,';
-            } else {
+            } else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+             else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }

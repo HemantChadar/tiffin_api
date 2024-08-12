@@ -38,7 +38,7 @@ exports.getPersonalAccessToken = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getPersonalAccessToken();
+            data = await getPersonalAccessToken(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

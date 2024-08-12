@@ -36,7 +36,7 @@ exports.getUserNotification = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getUserNotification();
+            data = await getUserNotification(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

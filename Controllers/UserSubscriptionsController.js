@@ -1,6 +1,6 @@
 const { getUserSubscriptionById, getUserSubscriptionByToken, getUserSubscription, addUserSubscription, updateUserSubscription } = require("../Models/UserSubscriptions")
 
- 
+
 
 
 const errorResponse = (message) => {
@@ -24,27 +24,27 @@ exports.getUserSubscription = async (req, res) => {
     try {
         if (req?.body?.id) {
             data = await getUserSubscriptionById(req.body.id);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("id is invailid "))
             }
         }
         else if (req?.body?.token) {
             data = await getUserSubscriptionByToken(req.body.token);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getUserSubscription();
+            data = await getUserSubscription(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("data is not availble "))
             }
-        } 
+        }
 
     } catch (error) {
         res.json(errorResponse(error))
@@ -86,7 +86,7 @@ exports.updateUserSubscription = async (req, res) => {
         }
         if (req?.body?.token) {
             user = await getUserSubscriptionByToken(req.body.token);
-        }  
+        }
         res.json(successResponse("data successfully updated", user[0]))
     } catch (error) {
         res.json(errorResponse(error))

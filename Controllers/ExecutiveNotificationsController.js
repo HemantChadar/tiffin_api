@@ -36,7 +36,7 @@ exports.getExecutiveNotification = async (req, res) => {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getExecutiveNotification();
+            data = await getExecutiveNotification(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {

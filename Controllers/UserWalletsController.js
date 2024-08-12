@@ -23,22 +23,22 @@ exports.getUserWallet = async (req, res) => {
     try {
         if (req?.body?.id) {
             data = await getUserWalletById(req.body.id);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("id is invailid "))
             }
         }
         else if (req?.body?.token) {
             data = await getUserWalletByToken(req.body.token);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getUserWallet();
-            if (data?.length >= 1) {
+            data = await getUserWallet(req?.body);
+            if (data) {
                 res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("data is not availble "))

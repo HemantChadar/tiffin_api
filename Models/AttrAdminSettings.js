@@ -4,9 +4,11 @@ const { CreateSlug, CreateToken } = require('../Conection/HelpingTool');
 
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getAdminSettings = async () => {
-    const query = "SELECT * FROM attr_admin_settings";
-    return await promise_connection(query);
+exports.getAdminSettings = async (body) => {
+    const query = "SELECT * FROM attr_admin_settings ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getAdminSettingsById = async (id) => {
@@ -50,9 +52,9 @@ exports.addAdminSettings = async (data) => {
     return await promise_connection(mailQuery, [dataSet]);
 };
 
- 
 
-exports.updateAdminSetting = async (data,keyName,keyValue) => {
+
+exports.updateAdminSetting = async (data, keyName, keyValue) => {
     const previousDataQuery = `SELECT * FROM attr_admin_settings WHERE ${keyName}=?`;
     const fieldsQuery = "DESCRIBE attr_admin_settings";
     let prevData = await promise_connection(previousDataQuery, [keyValue])
@@ -68,6 +70,10 @@ exports.updateAdminSetting = async (data,keyName,keyValue) => {
         else {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug(data.title))
+                query = query + element.Field + '=?,';
+            }
+            else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
                 query = query + element.Field + '=?,';
             } else {
                 query = query + element.Field + '=?,';

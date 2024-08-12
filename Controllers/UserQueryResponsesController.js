@@ -1,6 +1,6 @@
 const { getUserQueryResponseById, getUserQueryResponseByToken, getUserQueryResponse, addUserQueryResponse, updateUserQueryResponse } = require("../Models/UserQueryResponses")
 
- 
+
 const errorResponse = (message) => {
     return ({
         error: true,
@@ -22,27 +22,27 @@ exports.getUserQueryResponse = async (req, res) => {
     try {
         if (req?.body?.id) {
             data = await getUserQueryResponseById(req.body.id);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("id is invailid "))
             }
         }
         else if (req?.body?.token) {
             data = await getUserQueryResponseByToken(req.body.token);
-            if (data?.length >= 1) {
-                res.json(successResponse("data successfully get", data[0]))
+            if (data) {
+                res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("token is invailid"))
             }
         } else {
-            data = await getUserQueryResponse();
+            data = await getUserQueryResponse(req?.body);
             if (data?.length >= 1) {
                 res.json(successResponse("data successfully get", data))
             } else {
                 res.json(errorResponse("data is not availble "))
             }
-        } 
+        }
 
     } catch (error) {
         res.json(errorResponse(error))
@@ -54,7 +54,7 @@ exports.addUserQueryResponse = async (req, res) => {
     let data = [];
     try {
         data = await addUserQueryResponse(req.body);
-        const user = await getUserQueryResponseById(data.insertId); 
+        const user = await getUserQueryResponseById(data.insertId);
         res.json(successResponse("data successfully inserted", user[0]))
 
     } catch (error) {
@@ -83,7 +83,7 @@ exports.updateUserQueryResponse = async (req, res) => {
         }
         if (req?.body?.token) {
             user = await getUserQueryResponseByToken(req.body.token);
-        }  
+        }
         res.json(successResponse("data successfully updated", user[0]))
     } catch (error) {
         res.json(errorResponse(error))

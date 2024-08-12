@@ -5,9 +5,11 @@ const currentDate = new Date();
 const timestamp = currentDate.getTime();
 const promise_connection = promisify(conection.query).bind(conection);
 
-exports.getUserBusinessCharge = async () => {
-    const query = "SELECT * FROM user_business_charges";
-    return await promise_connection(query);
+exports.getUserBusinessCharge = async (body) => { 
+    const query = "SELECT * FROM user_business_charges ORDER BY id DESC LIMIT ? OFFSET ?";
+    let limit = body.limit
+    let offset = body.offset * body.limit
+    return await promise_connection(query, [limit, offset]);
 };
 
 exports.getUserBusinessChargeById = async (id) => {
@@ -68,7 +70,11 @@ exports.updateUserBusinessCharge = async (data, keyName, keyValue) => {
             if (element.Field === "slug") {
                 dataSet.push(CreateSlug("user_business_charges " + timestamp))
                 query = query + element.Field + '=?,';
-            } else {
+            } else if (element.Field === "updated_at") {
+                dataSet.push(new Date())
+                query = query + element.Field + '=?,';
+            }
+             else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }
