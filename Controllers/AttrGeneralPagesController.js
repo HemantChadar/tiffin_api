@@ -1,3 +1,4 @@
+const { messageForGetData } = require("../Conection/HelpingTool")
 const { getGeneralPagesById, getGeneralPagesByToken, getGeneralPages, addGeneralPages, updateGeneralPages } = require("../Models/AttrGeneralPages")
 
   
@@ -24,6 +25,8 @@ exports.getGeneralPages = async (req, res) => {
             data = await getGeneralPagesById(req?.body?.id);
             if (data?.length >= 1) {
                 res.json(successResponse("general pages successfully get", data[0]))
+                res.json(successResponse("attr_admin_settings " + messageForGetData, data[0]));
+
             } else {
                 res.json(errorResponse("id is invailid "))
             }

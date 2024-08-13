@@ -12,13 +12,15 @@ exports.getAdminSettings = async (body) => {
 };
 
 exports.getAdminSettingsById = async (id) => {
-    const query = "SELECT * FROM attr_admin_settings WHERE id=?";
-    return await promise_connection(query, [id]);
+    const query = "SELECT * FROM attr_admin_settings WHERE id=? limit 1";
+    let obj = await promise_connection(query, [id]);
+    return obj[0]
 };
 
 exports.getAdminSettingsByToken = async (token) => {
     const query = "SELECT * FROM attr_admin_settings WHERE token=?";
-    return await promise_connection(query, [token]);
+    let obj = await promise_connection(query, [token]);
+    return obj[0]
 };
 
 exports.addAdminSettings = async (data) => {
@@ -55,6 +57,40 @@ exports.addAdminSettings = async (data) => {
 
 
 exports.updateAdminSetting = async (data, keyName, keyValue) => {
+    // const previousDataQuery = `SELECT * FROM attr_admin_settings WHERE ${keyName}=?`;
+    // const fieldsQuery = "DESCRIBE attr_admin_settings";
+    // let prevData = await promise_connection(previousDataQuery, [keyValue])
+    // let fieldsName = await promise_connection(fieldsQuery)
+    // let query = 'UPDATE attr_admin_settings SET ';
+    // let mailQuery = ''
+    // let dataSet = []
+    // fieldsName.forEach(element => {
+    //     if (element.Field in data) {
+    //         query = query + element.Field + '=?,';
+    //         dataSet.push(data[element.Field])
+    //     }
+    //     else {
+    //         if (element.Field === "slug") {
+    //             dataSet.push(CreateSlug(data.title))
+    //             query = query + element.Field + '=?,';
+    //         }
+    //         else if (element.Field === "updated_at") {
+    //             dataSet.push(new Date())
+    //             query = query + element.Field + '=?,';
+    //         } else {
+    //             query = query + element.Field + '=?,';
+    //             dataSet.push(prevData[0][element.Field])
+    //         }
+    //     }
+    // }); 
+    // mailQuery = query.substring(0, query.length - 1) + ` WHERE ${keyName}=${keyValue}`;
+    // console.log("dataSet--", dataSet)
+    // console.log("mailQuery--", mailQuery)
+
+    // return await promise_connection(mailQuery, dataSet); 
+
+
+
     const previousDataQuery = `SELECT * FROM attr_admin_settings WHERE ${keyName}=?`;
     const fieldsQuery = "DESCRIBE attr_admin_settings";
     let prevData = await promise_connection(previousDataQuery, [keyValue])
@@ -75,13 +111,13 @@ exports.updateAdminSetting = async (data, keyName, keyValue) => {
             else if (element.Field === "updated_at") {
                 dataSet.push(new Date())
                 query = query + element.Field + '=?,';
-            } else {
+            }
+            else {
                 query = query + element.Field + '=?,';
                 dataSet.push(prevData[0][element.Field])
             }
         }
-    });
-    // dataSet.push(data.id)
+    }); 
     mailQuery = query.substring(0, query.length - 1) + ` WHERE ${keyName}=${keyValue}`;
     console.log("dataSet--", dataSet)
     console.log("mailQuery--", mailQuery)
